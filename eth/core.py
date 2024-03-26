@@ -27,6 +27,16 @@ class PriKey:
         pubkey = eth.secp256k1.G * eth.secp256k1.Fr(self.n)
         return PubKey(pubkey.x.x, pubkey.y.x)
 
+    def sign(self, data: bytearray):
+        assert len(data) == 32
+        m = eth.secp256k1.Fr(int.from_bytes(data))
+        r, s, v = eth.ecdsa.sign(eth.secp256k1.Fr(self.n), m)
+        # Here we do not adjust the sign of s.
+        # Doc: https://ethereum.stackexchange.com/questions/55245/why-is-s-in-transaction-signature-limited-to-n-21
+        # For BTC, v is in the prefix.
+        # For ETH, v is in the suffix.
+        return bytearray(r.x.to_bytes(32)) + bytearray(s.x.to_bytes(32)) + bytearray([v])
+
 
 class PubKey:
     def __init__(self, x: int, y: int):
