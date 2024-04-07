@@ -1,3 +1,4 @@
 /.pytest_cache
-/pyeth.egg-info
+/build
 /dist
+/pyeth.egg-info
