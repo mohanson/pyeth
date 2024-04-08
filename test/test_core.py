@@ -12,4 +12,4 @@ def test_pubkey_addr():
     prikey = eth.core.PriKey(1)
     pubkey = prikey.pubkey()
     addr = pubkey.addr()
-    assert addr == '0x7e5f4552091a69125d5dfcb7b8c2659029395bdf'
+    assert addr.hex() == '7e5f4552091a69125d5dfcb7b8c2659029395bdf'

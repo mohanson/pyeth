@@ -55,7 +55,7 @@ class PubKey:
         b = bytearray()
         b.extend(self.x.to_bytes(32))
         b.extend(self.y.to_bytes(32))
-        return '0x' + hash(b)[12:].hex()
+        return hash(b)[12:]
 
     def json(self):
         return {
