@@ -83,6 +83,19 @@ class TxLegacy:
         self.value = value
         self.data = data
         # Signature values.
-        self.v = int
-        self.r = int
-        self.s = int
+        self.v = 0
+        self.r = 0
+        self.s = 0
+
+    def hash(self) -> bytearray:
+        return hash(eth.rlp.encode([
+            eth.rlp.put_uint(self.nonce),
+            eth.rlp.put_uint(self.gas_price),
+            eth.rlp.put_uint(self.gas),
+            self.to if self.to else bytearray(),
+            eth.rlp.put_uint(self.value),
+            self.data,
+            eth.rlp.put_uint(eth.config.current.chain_id),
+            eth.rlp.put_uint(0),
+            eth.rlp.put_uint(0),
+        ]))

@@ -50,13 +50,13 @@ def decode_byte(data: bytearray):
     if head <= 0xb7:
         size = head - 0x80
         assert len(data) == 1 + size
-        body = data[1:1+size].copy()
+        body = data[1:].copy()
         return body
     if head <= 0xbf:
         nlen = head - 0xb7
         size = int.from_bytes(data[1:1+nlen])
         assert len(data) == 1 + nlen + size
-        body = data[1+nlen:1+nlen+size].copy()
+        body = data[1+nlen:].copy()
         return body
 
 
@@ -119,3 +119,19 @@ def decode(data: bytearray):
         return decode_byte(data)
     if data[0]:
         return decode_list(data)
+
+
+def get_bool(data: bytearray):
+    return len(data) == 1
+
+
+def get_uint(data: bytearray):
+    return int.from_bytes(data)
+
+
+def put_bool(data: bool):
+    return bytearray([0x01]) if data else bytearray()
+
+
+def put_uint(data: int):
+    return bytearray(data.to_bytes(32)).lstrip(bytearray([0x00]))

@@ -31,6 +31,18 @@ def eth_call(body, block_number):
     return r['result']
 
 
+def eth_chain_id():
+    r = requests.post(eth.config.current.url, json={
+        'id': random.randint(0x00000000, 0xffffffff),
+        'jsonrpc': '2.0',
+        'method': 'eth_chainId',
+        'params': []
+    }).json()
+    if 'error' in r:
+        raise Exception(r['error'])
+    return r['result']
+
+
 def eth_estimate_gas(body, block_number):
     r = requests.post(eth.config.current.url, json={
         'id': random.randint(0x00000000, 0xffffffff),
