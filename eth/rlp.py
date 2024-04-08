@@ -28,7 +28,7 @@ def encode_list(data: typing.List[bytearray]):
         return head + body
     if len(body):
         size = len(body).to_bytes()
-        head.append(0xf7)
+        head.append(0xf7 + len(size))
         head.extend(size)
         return head + body
 
