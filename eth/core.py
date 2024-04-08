@@ -1,6 +1,7 @@
 import Crypto.Hash.keccak
 import eth
 import json
+import typing
 
 
 def hash(data: bytearray):
@@ -62,3 +63,26 @@ class PubKey:
             'x': f'0x{self.x:064x}',
             'y': f'0x{self.y:064x}'
         }
+
+
+class TxLegacy:
+    def __init__(
+        self,
+        nonce: int,
+        gas_price: int,
+        gas: int,
+        to: typing.Optional[bytearray],
+        value: int,
+        data: bytearray,
+    ):
+        self.nonce = nonce
+        self.gas_price = gas_price
+        self.gas = gas
+        # None means contract creation.
+        self.to = to
+        self.value = value
+        self.data = data
+        # Signature values.
+        self.v = int
+        self.r = int
+        self.s = int
