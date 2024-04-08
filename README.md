@@ -22,6 +22,20 @@ $ python example/addr.py --prikey 0x00000000000000000000000000000000000000000000
 # 0x7e5f4552091a69125d5dfcb7b8c2659029395bdf
 ```
 
+## Test
+
+```sh
+$ git clone https://github.com/ethereum/go-ethereum --branch release/1.13
+$ cd go-ethereum
+$ make geth
+
+$ geth --dev --http
+$ geth attach /tmp/geth.ipc
+> eth.sendTransaction({from: eth.accounts[0], to: '0x7e5f4552091a69125d5dfcb7b8c2659029395bdf', value: web3.toWei(10000, 'ether')})
+
+$ pytest -v
+```
+
 ## License
 
 MIT
