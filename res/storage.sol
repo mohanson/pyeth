@@ -8,5 +8,5 @@ contract Storage {
 
     function set(uint256 num) public { number = num; }
 
-    function get() public view returns (uint256){ return number; }
+    function get() public view returns (uint256) { return number; }
 }
