@@ -55,6 +55,18 @@ def eth_estimate_gas(body, block_number):
     return r['result']
 
 
+def eth_gas_price():
+    r = requests.post(eth.config.current.url, json={
+        'id': random.randint(0x00000000, 0xffffffff),
+        'jsonrpc': '2.0',
+        'method': 'eth_gasPrice',
+        'params': []
+    }).json()
+    if 'error' in r:
+        raise Exception(r['error'])
+    return r['result']
+
+
 def eth_get_balance(addr, block_number):
     r = requests.post(eth.config.current.url, json={
         'id': random.randint(0x00000000, 0xffffffff),
