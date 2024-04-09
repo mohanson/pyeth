@@ -6,6 +6,17 @@ def test_balance():
     assert user.balance() != 0
 
 
+def test_contract_deploy():
+    user = eth.wallet.Wallet(1)
+    with open('res/storage', 'rb') as f:
+        data = bytearray(f.read())
+    hash = user.contract_deploy(data)
+    eth.rpc.eth_wait(f'0x{hash.hex()}')
+    addr = user.contract_addr(hash)
+    code = eth.rpc.eth_get_code(f'0x{addr.hex()}', 'latest')
+    assert bytearray.fromhex(code[2:]) != bytearray()
+
+
 def test_transfer():
     user = eth.wallet.Wallet(1)
     hole = eth.wallet.Wallet(2)

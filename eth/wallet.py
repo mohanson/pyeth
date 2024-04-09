@@ -25,6 +25,18 @@ class Wallet:
     def balance(self):
         return int(eth.rpc.eth_get_balance(f'0x{self.addr.hex()}', 'latest'), 0)
 
+    def contract_addr(self, hash: bytearray):
+        return bytearray.fromhex(eth.rpc.eth_get_transaction_receipt(f'0x{hash.hex()}')['contractAddress'][2:])
+
+    def contract_deploy(self, data: bytearray):
+        gas_price = int(eth.rpc.eth_gas_price(), 0)
+        gas = 21000 * 100
+        tx = eth.core.TxLegacy(self.nonce(), gas_price, gas, None, 0, data)
+        tx.sign(self.prikey)
+        hash = eth.rpc.eth_send_raw_transaction(f'0x{tx.rlp().hex()}')
+        assert tx.hash() == bytearray.fromhex(hash[2:])
+        return tx.hash()
+
     def nonce(self):
         return int(eth.rpc.eth_get_transaction_count(f'0x{self.addr.hex()}', 'pending'), 0)
 

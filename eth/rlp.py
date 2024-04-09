@@ -11,7 +11,7 @@ def encode_byte(data: bytearray):
         body.extend(data)
         return body
     if len(data):
-        size = len(data).to_bytes()
+        size = put_uint(len(data))
         body.append(0xb7 + len(size))
         body.extend(size)
         body.extend(data)
@@ -27,7 +27,7 @@ def encode_list(data: typing.List[bytearray]):
         head.append(0xc0 + len(body))
         return head + body
     if len(body):
-        size = len(body).to_bytes()
+        size = put_uint(len(body))
         head.append(0xf7 + len(size))
         head.extend(size)
         return head + body
