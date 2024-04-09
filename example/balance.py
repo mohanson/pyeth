@@ -13,4 +13,4 @@ if args.net == 'develop':
     eth.config.current = eth.config.develop
 
 balance = int(eth.rpc.eth_get_balance(args.addr, 'latest'), 0)
-print(balance / (1 * 10**18))
+print(balance / eth.denomination.ether)
