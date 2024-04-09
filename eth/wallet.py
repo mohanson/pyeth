@@ -31,29 +31,28 @@ class Wallet:
     def contract_deploy(self, data: bytearray):
         gas_price = int(eth.rpc.eth_gas_price(), 0)
         gas = 21000 * 100
-        tx = eth.core.TxLegacy(self.nonce(), gas_price, gas, None, 0, data)
+        value = 0
+        tx = eth.core.TxLegacy(self.nonce(), gas_price, gas, None, value, data)
+        return self.send(tx)
+
+    def nonce(self):
+        return int(eth.rpc.eth_get_transaction_count(f'0x{self.addr.hex()}', 'pending'), 0)
+
+    def send(self, tx: eth.core.TxLegacy):
         tx.sign(self.prikey)
         hash = eth.rpc.eth_send_raw_transaction(f'0x{tx.rlp().hex()}')
         assert tx.hash() == bytearray.fromhex(hash[2:])
         return tx.hash()
-
-    def nonce(self):
-        return int(eth.rpc.eth_get_transaction_count(f'0x{self.addr.hex()}', 'pending'), 0)
 
     def transfer(self, addr: bytearray, value: int):
         gas_price = int(eth.rpc.eth_gas_price(), 0)
         gas = 21000
         tx = eth.core.TxLegacy(self.nonce(), gas_price, gas, addr, value, bytearray())
-        tx.sign(self.prikey)
-        hash = eth.rpc.eth_send_raw_transaction(f'0x{tx.rlp().hex()}')
-        assert tx.hash() == bytearray.fromhex(hash[2:])
-        return tx.hash()
+        return self.send(tx)
 
     def transfer_all(self, addr: bytearray):
         gas_price = int(eth.rpc.eth_gas_price(), 0)
         gas = 21000
-        tx = eth.core.TxLegacy(self.nonce(), gas_price, gas, addr, self.balance() - gas * gas_price, bytearray())
-        tx.sign(self.prikey)
-        hash = eth.rpc.eth_send_raw_transaction(f'0x{tx.rlp().hex()}')
-        assert tx.hash() == bytearray.fromhex(hash[2:])
-        return tx.hash()
+        value = self.balance() - gas * gas_price
+        tx = eth.core.TxLegacy(self.nonce(), gas_price, gas, addr, value, bytearray())
+        return self.send(tx)
