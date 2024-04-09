@@ -5,11 +5,11 @@ import eth
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--addr', type=str, required=True, help='address')
-parser.add_argument('--net', type=str, choices=['develop'], default='testnet')
+parser.add_argument('--net', type=str, choices=['develop'], default='develop')
 args = parser.parse_args()
 
 if args.net == 'develop':
-    eth.config.upgrade('http://127.0.0.1:8114')
+    eth.config.upgrade('http://127.0.0.1:8545')
     eth.config.current = eth.config.develop
 
 balance = int(eth.rpc.eth_get_balance(args.addr, 'latest'), 0)
