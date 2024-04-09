@@ -1,4 +1,5 @@
 import eth
+import pathlib
 
 
 def test_balance():
@@ -8,8 +9,7 @@ def test_balance():
 
 def test_contract_deploy():
     user = eth.wallet.Wallet(1)
-    with open('res/storage', 'rb') as f:
-        data = bytearray(f.read())
+    data = bytearray(pathlib.Path('res/storage').read_bytes())
     hash = user.contract_deploy(data)
     eth.rpc.eth_wait(f'0x{hash.hex()}')
     addr = user.contract_addr(hash)
