@@ -22,6 +22,16 @@ $ python example/addr.py --prikey 0x00000000000000000000000000000000000000000000
 # 0x7e5f4552091a69125d5dfcb7b8c2659029395bdf
 ```
 
+**example/balance.py**
+
+Get the balance by an address.
+
+```sh
+$ python example/balance.py --addr 0x7e5f4552091a69125d5dfcb7b8c2659029395bdf
+
+# 39934.9989371221
+```
+
 ## Test
 
 ```sh
