@@ -30,7 +30,7 @@ class Wallet:
 
     def contract_deploy(self, data: bytearray):
         gas_price = int(eth.rpc.eth_gas_price(), 0)
-        gas = 21000 * 100
+        gas = eth.config.current.base_fee * 100
         value = 0
         tx = eth.core.TxLegacy(self.nonce(), gas_price, gas, None, value, data)
         return self.send(tx)
@@ -46,13 +46,13 @@ class Wallet:
 
     def transfer(self, addr: bytearray, value: int):
         gas_price = int(eth.rpc.eth_gas_price(), 0)
-        gas = 21000
+        gas = eth.config.current.base_fee
         tx = eth.core.TxLegacy(self.nonce(), gas_price, gas, addr, value, bytearray())
         return self.send(tx)
 
     def transfer_all(self, addr: bytearray):
         gas_price = int(eth.rpc.eth_gas_price(), 0)
-        gas = 21000
+        gas = eth.config.current.base_fee
         value = self.balance() - gas * gas_price
         tx = eth.core.TxLegacy(self.nonce(), gas_price, gas, addr, value, bytearray())
         return self.send(tx)
