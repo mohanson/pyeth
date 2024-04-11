@@ -27,14 +27,7 @@ if args.action == 'set':
     data = bytearray()
     data.extend(eth.core.hash(bytearray(b'set(uint256)'))[:4])
     data.extend(int(42).to_bytes(32))
-    hash = user.send(eth.core.TxLegacy(
-        user.nonce(),
-        int(eth.rpc.eth_gas_price(), 0),
-        100000,
-        bytearray.fromhex(args.addr[2:]),
-        0,
-        data
-    ))
+    hash = user.contract_exec(bytearray.fromhex(args.addr[2:]), 0, data)
     print(f'hash = 0x{hash.hex()}')
 
 if args.action == 'get':

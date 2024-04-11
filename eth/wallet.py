@@ -35,6 +35,12 @@ class Wallet:
         tx = eth.core.TxLegacy(self.nonce(), gas_price, gas, None, value, data)
         return self.send(tx)
 
+    def contract_exec(self, addr: bytearray, value: int, data: bytearray):
+        gas_price = int(eth.rpc.eth_gas_price(), 0)
+        gas = eth.config.current.base_fee * 100
+        tx = eth.core.TxLegacy(self.nonce(), gas_price, gas, addr, value, data)
+        return self.send(tx)
+
     def nonce(self):
         return int(eth.rpc.eth_get_transaction_count(f'0x{self.addr.hex()}', 'pending'), 0)
 
