@@ -86,6 +86,7 @@ class TxLegacy:
         value: int,
         data: bytearray,
     ):
+        assert isinstance(data, bytearray)
         self.nonce = nonce
         self.gas_price = gas_price
         self.gas = gas
