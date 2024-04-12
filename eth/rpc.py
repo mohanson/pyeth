@@ -175,6 +175,18 @@ def eth_get_transaction_receipt(hash):
     return r['result']
 
 
+def eth_max_priority_fee_per_gas():
+    r = requests.post(eth.config.current.url, json={
+        'id': random.randint(0x00000000, 0xffffffff),
+        'jsonrpc': '2.0',
+        'method': 'eth_maxPriorityFeePerGas',
+        'params': []
+    }).json()
+    if 'error' in r:
+        raise Exception(r['error'])
+    return r['result']
+
+
 def eth_send_raw_transaction(tx):
     r = requests.post(eth.config.current.url, json={
         'id': random.randint(0x00000000, 0xffffffff),
