@@ -46,7 +46,7 @@ class Wallet:
 
     def send(self, tx: eth.core.TxLegacy):
         tx.sign(self.prikey)
-        hash = eth.rpc.eth_send_raw_transaction(f'0x{tx.rlp().hex()}')
+        hash = eth.rpc.eth_send_raw_transaction(f'0x{tx.envelope().hex()}')
         assert tx.hash() == bytearray.fromhex(hash[2:])
         return tx.hash()
 

@@ -105,6 +105,9 @@ class TxLegacy:
     def __eq__(self, other):
         return self.hash() == other.hash()
 
+    def envelope(self):
+        return self.rlp()
+
     def hash(self):
         return hash(self.rlp())
 
@@ -150,3 +153,18 @@ class TxLegacy:
         self.r = int.from_bytes(sign[0x00:0x20])
         self.s = int.from_bytes(sign[0x20:0x40])
         self.v = sign[0x40] + 35 + eth.config.current.chain_id * 2
+
+
+# // AccessListTx is the data of EIP-2930 access list transactions.
+# https://eips.ethereum.org/EIPS/eip-2930
+# type AccessListTx struct {
+# 	ChainID    *big.Int        // destination chain ID
+# 	Nonce      uint64          // nonce of sender account
+# 	GasPrice   *big.Int        // wei per gas
+# 	Gas        uint64          // gas limit
+# 	To         *common.Address `rlp:"nil"` // nil means contract creation
+# 	Value      *big.Int        // wei amount
+# 	Data       []byte          // contract invocation input data
+# 	AccessList AccessList      // EIP-2930 access list
+# 	V, R, S    *big.Int        // signature values
+# }
