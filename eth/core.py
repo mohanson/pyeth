@@ -102,6 +102,9 @@ class TxLegacy:
     def __repr__(self):
         return json.dumps(self.json())
 
+    def __eq__(self, other):
+        return self.hash() == other.hash()
+
     def hash(self):
         return hash(self.rlp())
 
