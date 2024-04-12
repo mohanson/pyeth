@@ -106,10 +106,20 @@ class TxLegacy:
         return self.hash() == other.hash()
 
     def envelope(self):
-        return self.rlp()
+        return eth.rlp.encode([
+            eth.rlp.put_uint(self.nonce),
+            eth.rlp.put_uint(self.gas_price),
+            eth.rlp.put_uint(self.gas),
+            self.to if self.to else bytearray(),
+            eth.rlp.put_uint(self.value),
+            self.data,
+            eth.rlp.put_uint(self.v),
+            eth.rlp.put_uint(self.r),
+            eth.rlp.put_uint(self.s),
+        ])
 
     def hash(self):
-        return hash(self.rlp())
+        return hash(self.envelope())
 
     def json(self):
         return {
@@ -123,19 +133,6 @@ class TxLegacy:
             'r': self.r,
             's': self.s,
         }
-
-    def rlp(self) -> bytearray:
-        return eth.rlp.encode([
-            eth.rlp.put_uint(self.nonce),
-            eth.rlp.put_uint(self.gas_price),
-            eth.rlp.put_uint(self.gas),
-            self.to if self.to else bytearray(),
-            eth.rlp.put_uint(self.value),
-            self.data,
-            eth.rlp.put_uint(self.v),
-            eth.rlp.put_uint(self.r),
-            eth.rlp.put_uint(self.s),
-        ])
 
     def sign(self, prikey: PriKey):
         # EIP-155: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
@@ -155,16 +152,86 @@ class TxLegacy:
         self.v = sign[0x40] + 35 + eth.config.current.chain_id * 2
 
 
-# // AccessListTx is the data of EIP-2930 access list transactions.
-# https://eips.ethereum.org/EIPS/eip-2930
-# type AccessListTx struct {
-# 	ChainID    *big.Int        // destination chain ID
-# 	Nonce      uint64          // nonce of sender account
-# 	GasPrice   *big.Int        // wei per gas
-# 	Gas        uint64          // gas limit
-# 	To         *common.Address `rlp:"nil"` // nil means contract creation
-# 	Value      *big.Int        // wei amount
-# 	Data       []byte          // contract invocation input data
-# 	AccessList AccessList      // EIP-2930 access list
-# 	V, R, S    *big.Int        // signature values
-# }
+class TxAccessList:
+    # TxAccessList is the data of EIP-2930 access list transactions.
+    # See https://eips.ethereum.org/EIPS/eip-2930.
+    def __init__(
+        self,
+        chain_id: int,
+        nonce: int,
+        gas_price: int,
+        gas: int,
+        to: typing.Optional[bytearray],
+        value: int,
+        data: bytearray,
+    ):
+        assert chain_id == eth.config.current.chain_id
+        assert isinstance(data, bytearray)
+        self.chain_id = chain_id
+        self.nonce = nonce
+        self.gas_price = gas_price
+        self.gas = gas
+        self.to = to
+        self.value = value
+        self.data = data
+        self.access_list = []
+        self.v = 0
+        self.r = 0
+        self.s = 0
+
+    def __repr__(self):
+        return json.dumps(self.json())
+
+    def __eq__(self, other):
+        return self.hash() == other.hash()
+
+    def envelope(self):
+        return bytearray([0x01]) + eth.rlp.encode([
+            eth.rlp.put_uint(self.chain_id),
+            eth.rlp.put_uint(self.nonce),
+            eth.rlp.put_uint(self.gas_price),
+            eth.rlp.put_uint(self.gas),
+            self.to if self.to else bytearray(),
+            eth.rlp.put_uint(self.value),
+            self.data,
+            self.access_list,
+            eth.rlp.put_uint(self.v),
+            eth.rlp.put_uint(self.r),
+            eth.rlp.put_uint(self.s),
+        ])
+
+    def hash(self):
+        return hash(self.envelope())
+
+    def json(self):
+        return {
+            'chain_id': self.chain_id,
+            'nonce': self.nonce,
+            'gas_price': self.gas_price,
+            'gas': self.gas,
+            'to': f'0x{self.to.hex()}' if self.to else None,
+            'value': self.value,
+            'data': f'0x{self.data.hex()}',
+            'access_list': [[f'0x{e[0].hex()}', [f'0x{f.hex()}' for f in e[1]]] for e in self.access_list],
+            'v': self.v,
+            'r': self.r,
+            's': self.s,
+        }
+
+    def sign(self, prikey: PriKey):
+        sign = prikey.sign(hash(bytearray([0x01]) + eth.rlp.encode([
+            eth.rlp.put_uint(self.chain_id),
+            eth.rlp.put_uint(self.nonce),
+            eth.rlp.put_uint(self.gas_price),
+            eth.rlp.put_uint(self.gas),
+            self.to if self.to else bytearray(),
+            eth.rlp.put_uint(self.value),
+            self.data,
+            self.access_list,
+        ])))
+        self.r = int.from_bytes(sign[0x00:0x20])
+        self.s = int.from_bytes(sign[0x20:0x40])
+        # TxAccessList are defined to use 0 and 1 as their recovery.
+        # Why EIP-2930 access list tx use unprotected Homestead signature scheme?
+        # See also: https://github.com/ethereum/go-ethereum/issues/24421.
+        self.v = sign[0x40]
