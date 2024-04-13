@@ -203,5 +203,13 @@ def eth_wait(hash):
     for _ in itertools.repeat(0):
         time.sleep(1)
         r = eth_get_transaction_by_hash(hash)
-        if r and r['blockNumber']:
-            break
+        if not r:
+            continue
+        if not r['blockNumber']:
+            continue
+        r = eth_get_transaction_receipt(hash)
+        if not r:
+            continue
+        if int(r['status'], 0) != 1:
+            raise Exception(r['status'])
+        break
