@@ -32,7 +32,7 @@ def test_eth_send_raw_transaction_tx_access_list():
     tx.sign(user_prikey)
     val1 = int(eth.rpc.eth_get_balance(f'0x{hole_addr.hex()}', 'latest'), 0)
     hash = eth.rpc.eth_send_raw_transaction(f'0x{tx.envelope().hex()}')
-    eth.rpc.eth_wait(hash)
+    eth.rpc.wait(hash)
     val2 = int(eth.rpc.eth_get_balance(f'0x{hole_addr.hex()}', 'latest'), 0)
     assert val2 == val1 + 1 * eth.denomination.ether
 
@@ -58,7 +58,7 @@ def test_eth_send_raw_transaction_tx_dynamic_fee():
     tx.sign(user_prikey)
     val1 = int(eth.rpc.eth_get_balance(f'0x{hole_addr.hex()}', 'latest'), 0)
     hash = eth.rpc.eth_send_raw_transaction(f'0x{tx.envelope().hex()}')
-    eth.rpc.eth_wait(hash)
+    eth.rpc.wait(hash)
     val2 = int(eth.rpc.eth_get_balance(f'0x{hole_addr.hex()}', 'latest'), 0)
     assert val2 == val1 + 1 * eth.denomination.ether
 
@@ -79,6 +79,6 @@ def test_eth_send_raw_transaction_tx_legacy():
     tx.sign(user_prikey)
     val1 = int(eth.rpc.eth_get_balance(f'0x{hole_addr.hex()}', 'latest'), 0)
     hash = eth.rpc.eth_send_raw_transaction(f'0x{tx.envelope().hex()}')
-    eth.rpc.eth_wait(hash)
+    eth.rpc.wait(hash)
     val2 = int(eth.rpc.eth_get_balance(f'0x{hole_addr.hex()}', 'latest'), 0)
     assert val2 == val1 + 1 * eth.denomination.ether

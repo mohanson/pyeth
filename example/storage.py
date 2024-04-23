@@ -18,7 +18,7 @@ if args.action == 'deploy':
     data = bytearray(pathlib.Path('res/storage').read_bytes())
     hash = user.contract_deploy(data)
     print(f'hash = 0x{hash.hex()}')
-    eth.rpc.eth_wait(f'0x{hash.hex()}')
+    eth.rpc.wait(f'0x{hash.hex()}')
     addr = user.contract_addr(hash)
     print(f'addr = 0x{addr.hex()}')
 
