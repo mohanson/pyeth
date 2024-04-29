@@ -28,6 +28,13 @@ class Wallet:
     def contract_addr(self, hash: bytearray):
         return bytearray.fromhex(eth.rpc.eth_get_transaction_receipt(f'0x{hash.hex()}')['contractAddress'][2:])
 
+    def contract_call(self, addr: bytearray, data: bytearray):
+        return bytearray.fromhex(eth.rpc.eth_call({
+            'from': f'0x{self.addr.hex()}',
+            'to': f'0x{addr.hex()}',
+            'input': f'0x{data.hex()}',
+        }, 'latest')[2:])
+
     def contract_deploy(self, data: bytearray):
         gas_price = int(eth.rpc.eth_gas_price(), 0)
         gas = eth.config.current.tx_gas * 100

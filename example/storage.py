@@ -35,6 +35,6 @@ if args.action == 'get':
     data.extend(eth.core.hash(bytearray(b'get()'))[:4])
     r = eth.rpc.eth_call({
         'to': args.addr,
-        'data': f'0x{data.hex()}'
+        'input': f'0x{data.hex()}'
     }, 'latest')
     print(f'data = {r}')

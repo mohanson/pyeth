@@ -51,7 +51,7 @@ $ python example/storage.py --action get --addr 0x930b793f778bbf43fab1080abf1840
 ## Test
 
 ```sh
-$ git clone https://github.com/ethereum/go-ethereum --branch release/1.13
+$ git clone https://github.com/ethereum/go-ethereum --branch release/1.14
 $ cd go-ethereum
 $ make geth
 
