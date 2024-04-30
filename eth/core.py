@@ -18,8 +18,7 @@ class PriKey:
         return json.dumps(self.json())
 
     def __eq__(self, other):
-        a = self.n == other.n
-        return a
+        return self.n == other.n
 
     def json(self):
         return f'0x{self.n:064x}'
@@ -59,9 +58,10 @@ class PubKey:
         return json.dumps(self.json())
 
     def __eq__(self, other):
-        a = self.x == other.x
-        b = self.y == other.y
-        return a and b
+        return all([
+            self.x == other.x,
+            self.y == other.y,
+        ])
 
     def addr(self):
         b = bytearray()
