@@ -1,9 +1,10 @@
 import eth.secp256k1
 import itertools
 import random
+import typing
 
 
-def sign(prikey: eth.secp256k1.Fr, m: eth.secp256k1.Fr) -> tuple[eth.secp256k1.Fr, eth.secp256k1.Fr, int]:
+def sign(prikey: eth.secp256k1.Fr, m: eth.secp256k1.Fr) -> typing.Tuple[eth.secp256k1.Fr, eth.secp256k1.Fr, int]:
     # https://www.secg.org/sec1-v2.pdf
     # 4.1.3 Signing Operation
     for _ in itertools.repeat(0):
