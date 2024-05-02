@@ -30,23 +30,25 @@ class PriKey:
     def sign(self, data: bytearray):
         assert len(data) == 32
         m = eth.secp256k1.Fr(int.from_bytes(data))
-        r, s, v = eth.ecdsa.sign(eth.secp256k1.Fr(self.n), m)
-        # https://ethereum.github.io/yellowpaper/paper.pdf, Appendix F. Signing Transactions.
-        # We declare that an ECDSA signature is invalid unless all the following conditions are true:
-        # 1) 0 < r < secp256k1n
-        # 2) 0 < s < secp256k1n / 2 + 1
-        # 3) v ∈ {0, 1}
-        # There is only a small probability that v will get 2 and 3.
-        if v > 1:
-            return self.sign(data)
-        # Here we adjust the sign of s.
-        # Doc: https://ethereum.stackexchange.com/questions/55245/why-is-s-in-transaction-signature-limited-to-n-21
-        if s.x * 2 >= eth.secp256k1.N:
-            s = -s
-            v = 1 - v
-        # For BTC, v is in the prefix.
-        # For ETH, v is in the suffix.
-        return bytearray(r.x.to_bytes(32)) + bytearray(s.x.to_bytes(32)) + bytearray([v])
+        for _ in range(8):
+            r, s, v = eth.ecdsa.sign(eth.secp256k1.Fr(self.n), m)
+            # https://ethereum.github.io/yellowpaper/paper.pdf, Appendix F. Signing Transactions.
+            # We declare that an ECDSA signature is invalid unless all the following conditions are true:
+            # 1) 0 < r < secp256k1n
+            # 2) 0 < s < secp256k1n / 2 + 1
+            # 3) v ∈ {0, 1}
+            # There is only a small probability that v will get 2 and 3.
+            if v > 1:
+                continue
+            # Here we adjust the sign of s.
+            # Doc: https://ethereum.stackexchange.com/questions/55245/why-is-s-in-transaction-signature-limited-to-n-21
+            if s.x * 2 >= eth.secp256k1.N:
+                s = -s
+                v = 1 - v
+            # For BTC, v is in the prefix.
+            # For ETH, v is in the suffix.
+            return bytearray(r.x.to_bytes(32)) + bytearray(s.x.to_bytes(32)) + bytearray([v])
+        raise Exception
 
 
 class PubKey:
