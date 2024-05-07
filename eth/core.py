@@ -159,7 +159,6 @@ class TxAccessList:
     # See https://eips.ethereum.org/EIPS/eip-2930.
     def __init__(
         self,
-        chain_id: int,
         nonce: int,
         gas_price: int,
         gas: int,
@@ -167,9 +166,8 @@ class TxAccessList:
         value: int,
         data: bytearray,
     ):
-        assert chain_id == eth.config.current.chain_id
         assert isinstance(data, bytearray)
-        self.chain_id = chain_id
+        self.chain_id = eth.config.current.chain_id
         self.nonce = nonce
         self.gas_price = gas_price
         self.gas = gas
@@ -244,7 +242,6 @@ class TxDynamicFee:
     # See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1559.md.
     def __init__(
         self,
-        chain_id: int,
         nonce: int,
         gas_tip_cap: int,  # a.k.a. max_priority_fee_per_gas
         gas_fee_cap: int,  # a.k.a. max_fee_per_gas
@@ -253,9 +250,8 @@ class TxDynamicFee:
         value: int,
         data: bytearray,
     ):
-        assert chain_id == eth.config.current.chain_id
         assert isinstance(data, bytearray)
-        self.chain_id = chain_id
+        self.chain_id = eth.config.current.chain_id
         self.nonce = nonce
         self.gas_tip_cap = gas_tip_cap
         self.gas_fee_cap = gas_fee_cap

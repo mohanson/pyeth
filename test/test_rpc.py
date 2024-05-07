@@ -21,7 +21,6 @@ def test_eth_send_raw_transaction_tx_access_list():
     hole_prikey = eth.core.PriKey(2)
     hole_addr = hole_prikey.pubkey().addr()
     tx = eth.core.TxAccessList(
-        eth.config.current.chain_id,
         int(eth.rpc.eth_get_transaction_count(f'0x{user_addr.hex()}', 'pending'), 0),
         int(eth.rpc.eth_gas_price(), 0),
         eth.config.current.tx_gas,
@@ -46,7 +45,6 @@ def test_eth_send_raw_transaction_tx_dynamic_fee():
     gas_pre = int(eth.rpc.eth_get_block_by_number('latest')['baseFeePerGas'], 0)
     gas_fee_cap = gas_pre + gas_tip_cap
     tx = eth.core.TxDynamicFee(
-        eth.config.current.chain_id,
         int(eth.rpc.eth_get_transaction_count(f'0x{user_addr.hex()}', 'pending'), 0),
         gas_tip_cap,
         gas_fee_cap,
