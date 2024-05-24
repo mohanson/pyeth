@@ -16,10 +16,16 @@ if args.net == 'mainnet':
 block = eth.rpc.eth_get_block_by_number('latest')
 for tx in block['transactions']:
     txhash = tx['hash']
+    # Ethereum's transaction data does not contain the sender's address. Instead, you can calculate the sender's public
+    # key from the transaction hash and signature, and then calculate the sender's address from the public key.
     m = int(txhash, 16)
     r = int(tx['r'], 16)
     s = int(tx['s'], 16)
     v = int(tx['v'], 16)
+    # The value of V is very rich:
+    # Legacy tx          : {0,1} + 27
+    # Legacy tx + EIP-155: {0,1} + 35 + CHAIN_ID * 2
+    # Other situations   : {0,1}
     if v > 26:
         v = v - 27 - eth.config.current.chain_id * 2
         v = v % 4
