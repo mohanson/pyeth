@@ -24,12 +24,14 @@ if args.action == 'deploy':
 
 if args.action == 'set':
     user = eth.wallet.Wallet(int(args.prikey, 0))
-    data = eth.abi.function_call('set', ['uint256'], [42])
+    data = eth.abi.function_selector('set', ['uint256']) + eth.abi.argument_encoding([
+        eth.abi.encode_uint256(42),
+    ])
     hash = user.contract_exec(bytearray.fromhex(args.addr[2:]), 0, data)
     print(f'hash = 0x{hash.hex()}')
 
 if args.action == 'get':
-    data = eth.abi.function_call('get', [], [])
+    data = eth.abi.function_selector('get', [])
     r = eth.rpc.eth_call({
         'to': args.addr,
         'input': f'0x{data.hex()}'
