@@ -32,6 +32,18 @@ $ python example/balance.py --addr 0x7e5f4552091a69125d5dfcb7b8c2659029395bdf
 # 39934.9989371221
 ```
 
+**example/scan_block.py**
+
+Get the latest block and print out the transaction hash, sender, receiver and value(in ether).
+
+```sh
+$ python example/scan_block.py --net mainnet
+
+# 0x41733e4e2b1537c9be99ad591c2e2a608dbff547ebd91acbb65e9a205aceb3ff
+# 0x9ab23085cb3e847d37819a712512dfd5d60c8d88 0x429cf888dae41d589d57f6dc685707bec755fe63 1.9937829e-11
+# ...
+```
+
 **example/storage.py**
 
 Publish a storage contract, then store a number 42 in the contract, and finally read this number.
