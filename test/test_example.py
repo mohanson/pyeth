@@ -13,6 +13,10 @@ def test_balance():
     call('python example/balance.py --addr 0x7e5f4552091a69125d5dfcb7b8c2659029395bdf')
 
 
+def test_collision():
+    call('python example/collision.py')
+
+
 def test_scan_block():
     call('python example/scan_block.py')
 

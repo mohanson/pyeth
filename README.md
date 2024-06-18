@@ -32,6 +32,14 @@ $ python example/balance.py --addr 0x7e5f4552091a69125d5dfcb7b8c2659029395bdf
 # 39934.9989371221
 ```
 
+**example/collision.py**
+
+Generate a random private key and check whether there are assets under the private key.
+
+```sh
+$ python example/collision.py --net mainnet
+```
+
 **example/scan_block.py**
 
 Get the latest block and print out the transaction hash, sender, receiver and value(in ether).
