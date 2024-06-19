@@ -2,6 +2,18 @@ import eth
 import json
 
 
+class WalletTransactionAnalyzer:
+    def __init__(self, tx: eth.core.TxLegacy):
+        self.tx = tx
+
+    def analyze_gas_price(self):
+        # Make sure the gas price is less than 32 gwei. This is a simple check, but it works well in most cases.
+        assert self.tx.gas_price < 32 * eth.denomination.gwei
+
+    def analyze(self):
+        self.analyze_gas_price()
+
+
 class Wallet:
     def __init__(self, prikey: int):
         self.prikey = eth.core.PriKey(prikey)
@@ -56,6 +68,7 @@ class Wallet:
 
     def send(self, tx: eth.core.TxLegacy):
         tx.sign(self.prikey)
+        WalletTransactionAnalyzer(tx).analyze()
         hash = eth.rpc.eth_send_raw_transaction(f'0x{tx.envelope().hex()}')
         assert tx.hash() == bytearray.fromhex(hash[2:])
         return tx.hash()
