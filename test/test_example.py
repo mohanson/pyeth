@@ -17,8 +17,12 @@ def test_collision():
     call('python example/collision.py')
 
 
-def test_scan_block():
-    call('python example/scan_block.py')
+def test_scan_erc20():
+    call('python example/scan_erc20.py')
+
+
+def test_scan_eth():
+    call('python example/scan_eth.py')
 
 
 def test_storage():

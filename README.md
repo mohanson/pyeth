@@ -40,12 +40,24 @@ Generate a random private key and check whether there are assets under the priva
 $ python example/collision.py --net mainnet
 ```
 
-**example/scan_block.py**
+**example/scan_erc20.py**
+
+Print all usdt transfer events in the last block.
+
+```sh
+$ python example/scan_erc20.py
+
+# 0x4d74d6fb5a75d121cda9f9dfbd0bd074999b43731f17140606ea57eccb5a7192
+# 0x11b815efb8f581194ae79006d24e0d814b7697f6 0xa69babef1ca67a37ffaf7a485dfff3382056e78c 135241.983213
+# ...
+```
+
+**example/scan_eth.py**
 
 Get the latest block and print out the transaction hash, sender, receiver and value(in ether).
 
 ```sh
-$ python example/scan_block.py --net mainnet
+$ python example/scan_eth.py --net mainnet
 
 # 0x41733e4e2b1537c9be99ad591c2e2a608dbff547ebd91acbb65e9a205aceb3ff
 # 0x9ab23085cb3e847d37819a712512dfd5d60c8d88 0x429cf888dae41d589d57f6dc685707bec755fe63 1.9937829e-11
