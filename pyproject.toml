@@ -7,7 +7,7 @@ packages = ["eth"]
 
 [project]
 name = "pyeth"
-version = "0.1.0"
+version = "1.0.0"
 authors = [
   { name="Mohanson", email="mohanson@outlook.com" },
 ]
