@@ -4,7 +4,7 @@ import eth
 # Get the latest block and print out the transaction hash, sender, receiver and value(in ether).
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--net', type=str, choices=['develop', 'mainnet'], default='develop')
+parser.add_argument('--net', type=str, choices=['develop', 'mainnet', 'tesenet'], default='develop')
 args = parser.parse_args()
 
 if args.net == 'develop':
@@ -12,6 +12,8 @@ if args.net == 'develop':
     eth.config.current = eth.config.develop
 if args.net == 'mainnet':
     eth.config.current = eth.config.mainnet
+if args.net == 'testnet':
+    eth.config.current = eth.config.testnet
 
 block = eth.rpc.eth_get_block_by_number('latest')
 for tx in block['transactions']:

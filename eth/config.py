@@ -25,6 +25,12 @@ mainnet = ObjectDict({
     'tx_gas': 21000,
 })
 
+testnet = ObjectDict({
+    'url': 'https://rpc.sepolia.org',
+    'chain_id': 11155111,
+    'tx_gas': 21000,
+})
+
 
 def upgrade(url: str):
     develop.url = url

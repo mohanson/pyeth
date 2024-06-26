@@ -5,13 +5,17 @@ import pathlib
 parser = argparse.ArgumentParser()
 parser.add_argument('--action', type=str, choices=['deploy', 'set', 'get'])
 parser.add_argument('--addr', type=str, help='addr')
-parser.add_argument('--net', type=str, choices=['develop'], default='develop')
+parser.add_argument('--net', type=str, choices=['develop', 'mainnet', 'testnet'], default='develop')
 parser.add_argument('--prikey', type=str, help='private key')
 args = parser.parse_args()
 
 if args.net == 'develop':
     eth.config.upgrade('http://127.0.0.1:8545')
     eth.config.current = eth.config.develop
+if args.net == 'mainnet':
+    eth.config.current = eth.config.mainnet
+if args.net == 'testnet':
+    eth.config.current = eth.config.testnet
 
 if args.action == 'deploy':
     user = eth.wallet.Wallet(int(args.prikey, 0))
