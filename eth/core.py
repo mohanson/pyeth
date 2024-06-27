@@ -52,6 +52,8 @@ class PriKey:
 
 class PubKey:
     def __init__(self, x: int, y: int):
+        # The public key must be on the curve.
+        _ = eth.secp256k1.Pt(eth.secp256k1.Fq(x), eth.secp256k1.Fq(y))
         self.x = x
         self.y = y
 
