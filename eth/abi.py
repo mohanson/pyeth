@@ -1,6 +1,12 @@
 import eth.core
 import typing
 
+# The Contract Application Binary Interface (ABI) is the standard way to interact with contracts in the Ethereum
+# ecosystem, both from outside the blockchain and for contract-to-contract interaction. Data is encoded according to
+# its type, as described in this specification. The encoding is not self describing and thus requires a schema in order
+# to decode.
+#
+# See: https://docs.soliditylang.org/en/latest/abi-spec.html
 
 def encode_uint256(data: int) -> bytearray:
     assert data >= 0
