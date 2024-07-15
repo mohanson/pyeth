@@ -5,30 +5,32 @@ import json
 import typing
 
 
-def hash(data: bytearray):
+def hash(data: bytearray) -> bytearray:
     k = Crypto.Hash.keccak.new(digest_bits=256)
     k.update(data)
     return bytearray(k.digest())
 
 
 class PriKey:
-    def __init__(self, n: int):
+    def __init__(self, n: int) -> None:
         self.n = n
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return json.dumps(self.json())
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.n == other.n
 
-    def json(self):
-        return f'0x{self.n:064x}'
+    def json(self) -> typing.Dict:
+        return {
+            'n': f'0x{self.n:064x}',
+        }
 
     def pubkey(self):
         pubkey = eth.secp256k1.G * eth.secp256k1.Fr(self.n)
         return PubKey(pubkey.x.x, pubkey.y.x)
 
-    def sign(self, data: bytearray):
+    def sign(self, data: bytearray) -> bytearray:
         assert len(data) == 32
         m = eth.secp256k1.Fr(int.from_bytes(data))
         for _ in itertools.repeat(0):
@@ -51,28 +53,28 @@ class PriKey:
 
 
 class PubKey:
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int, y: int) -> None:
         # The public key must be on the curve.
         _ = eth.secp256k1.Pt(eth.secp256k1.Fq(x), eth.secp256k1.Fq(y))
         self.x = x
         self.y = y
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return json.dumps(self.json())
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return all([
             self.x == other.x,
             self.y == other.y,
         ])
 
-    def addr(self):
+    def addr(self) -> str:
         b = bytearray()
         b.extend(self.x.to_bytes(32))
         b.extend(self.y.to_bytes(32))
         return hash(b)[12:]
 
-    def json(self):
+    def json(self) -> typing.Dict:
         return {
             'x': f'0x{self.x:064x}',
             'y': f'0x{self.y:064x}'
@@ -88,7 +90,7 @@ class TxLegacy:
         to: typing.Optional[bytearray],
         value: int,
         data: bytearray,
-    ):
+    ) -> None:
         assert isinstance(data, bytearray)
         self.nonce = nonce
         self.gas_price = gas_price
@@ -102,13 +104,13 @@ class TxLegacy:
         self.r = 0
         self.s = 0
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return json.dumps(self.json())
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.hash() == other.hash()
 
-    def envelope(self):
+    def envelope(self) -> bytearray:
         return eth.rlp.encode([
             eth.rlp.put_uint(self.nonce),
             eth.rlp.put_uint(self.gas_price),
@@ -121,10 +123,10 @@ class TxLegacy:
             eth.rlp.put_uint(self.s),
         ])
 
-    def hash(self):
+    def hash(self) -> bytearray:
         return hash(self.envelope())
 
-    def json(self):
+    def json(self) -> typing.Dict:
         return {
             'nonce': self.nonce,
             'gas_price': self.gas_price,
@@ -137,7 +139,7 @@ class TxLegacy:
             's': self.s,
         }
 
-    def sign(self, prikey: PriKey):
+    def sign(self, prikey: PriKey) -> None:
         # EIP-155: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
         sign = prikey.sign(hash(eth.rlp.encode([
             eth.rlp.put_uint(self.nonce),
@@ -166,7 +168,7 @@ class TxAccessList:
         to: typing.Optional[bytearray],
         value: int,
         data: bytearray,
-    ):
+    ) -> None:
         assert isinstance(data, bytearray)
         self.chain_id = eth.config.current.chain_id
         self.nonce = nonce
@@ -180,13 +182,13 @@ class TxAccessList:
         self.r = 0
         self.s = 0
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return json.dumps(self.json())
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.hash() == other.hash()
 
-    def envelope(self):
+    def envelope(self) -> bytearray:
         return bytearray([0x01]) + eth.rlp.encode([
             eth.rlp.put_uint(self.chain_id),
             eth.rlp.put_uint(self.nonce),
@@ -201,10 +203,10 @@ class TxAccessList:
             eth.rlp.put_uint(self.s),
         ])
 
-    def hash(self):
+    def hash(self) -> bytearray:
         return hash(self.envelope())
 
-    def json(self):
+    def json(self) -> typing.Dict:
         return {
             'chain_id': self.chain_id,
             'nonce': self.nonce,
@@ -219,7 +221,7 @@ class TxAccessList:
             's': self.s,
         }
 
-    def sign(self, prikey: PriKey):
+    def sign(self, prikey: PriKey) -> None:
         sign = prikey.sign(hash(bytearray([0x01]) + eth.rlp.encode([
             eth.rlp.put_uint(self.chain_id),
             eth.rlp.put_uint(self.nonce),
@@ -250,7 +252,7 @@ class TxDynamicFee:
         to: typing.Optional[bytearray],
         value: int,
         data: bytearray,
-    ):
+    ) -> None:
         assert isinstance(data, bytearray)
         self.chain_id = eth.config.current.chain_id
         self.nonce = nonce
@@ -265,13 +267,13 @@ class TxDynamicFee:
         self.r = 0
         self.s = 0
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return json.dumps(self.json())
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.hash() == other.hash()
 
-    def envelope(self):
+    def envelope(self) -> bytearray:
         return bytearray([0x02]) + eth.rlp.encode([
             eth.rlp.put_uint(self.chain_id),
             eth.rlp.put_uint(self.nonce),
@@ -287,10 +289,10 @@ class TxDynamicFee:
             eth.rlp.put_uint(self.s),
         ])
 
-    def hash(self):
+    def hash(self) -> bytearray:
         return hash(self.envelope())
 
-    def json(self):
+    def json(self) -> typing.Dict:
         return {
             'chain_id': self.chain_id,
             'nonce': self.nonce,
@@ -306,7 +308,7 @@ class TxDynamicFee:
             's': self.s,
         }
 
-    def sign(self, prikey: PriKey):
+    def sign(self, prikey: PriKey) -> None:
         sign = prikey.sign(hash(bytearray([0x02]) + eth.rlp.encode([
             eth.rlp.put_uint(self.chain_id),
             eth.rlp.put_uint(self.nonce),

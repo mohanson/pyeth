@@ -4,9 +4,10 @@ import eth
 
 eth.config.current = eth.config.mainnet
 
+n = eth.rpc.eth_block_number()
 r = eth.rpc.eth_get_logs({
-    'fromBlock': 'latest',
-    'toBlock': 'latest',
+    'fromBlock': n,
+    'toBlock': n,
     'address': '0xdAC17F958D2ee523a2206206994597C13D831ec7',
     'topics': [
         '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',

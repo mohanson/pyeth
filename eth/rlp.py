@@ -1,7 +1,7 @@
 import typing
 
 
-def encode_byte(data: bytearray):
+def encode_byte(data: bytearray) -> bytearray:
     body = bytearray()
     if len(data) == 0x01 and data[0] <= 0x7f:
         body.extend(data)
@@ -18,7 +18,7 @@ def encode_byte(data: bytearray):
         return body
 
 
-def encode_list(data: typing.List[bytearray]):
+def encode_list(data: typing.List[bytearray]) -> bytearray:
     head = bytearray()
     body = bytearray()
     for e in data:
@@ -33,14 +33,14 @@ def encode_list(data: typing.List[bytearray]):
         return head + body
 
 
-def encode(data: bytearray | typing.List[bytearray]):
+def encode(data: bytearray | typing.List[bytearray]) -> bytearray:
     if isinstance(data, bytearray):
         return encode_byte(data)
     if isinstance(data, list):
         return encode_list(data)
 
 
-def decode_byte(data: bytearray):
+def decode_byte(data: bytearray) -> bytearray:
     head = data[0]
     assert head <= 0xbf
     if head <= 0x7f:
@@ -60,7 +60,7 @@ def decode_byte(data: bytearray):
         return body
 
 
-def decode_list(data: bytearray):
+def decode_list(data: bytearray) -> typing.List[bytearray]:
     head = data[0]
     assert head >= 0xc0
     offs = 0
@@ -114,24 +114,24 @@ def decode_list(data: bytearray):
     return body
 
 
-def decode(data: bytearray):
+def decode(data: bytearray) -> bytearray | typing.List[bytearray]:
     if data[0] <= 0xbf:
         return decode_byte(data)
     if data[0]:
         return decode_list(data)
 
 
-def get_bool(data: bytearray):
+def get_bool(data: bytearray) -> bool:
     return len(data) == 1
 
 
-def get_uint(data: bytearray):
+def get_uint(data: bytearray) -> int:
     return int.from_bytes(data)
 
 
-def put_bool(data: bool):
+def put_bool(data: bool) -> bytearray:
     return bytearray([0x01]) if data else bytearray()
 
 
-def put_uint(data: int):
+def put_uint(data: int) -> bytearray:
     return bytearray(data.to_bytes(32)).lstrip(bytearray([0x00]))
