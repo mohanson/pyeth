@@ -22,6 +22,6 @@ for _ in range(args.limit):
     pubkey = prikey.pubkey()
     addr = pubkey.addr()
     number = eth.rpc.eth_get_balance(f'0x{addr.hex()}', 'latest')
-    print(prikey.json(), number)
+    print(prikey.json()['n'], number)
     if number != '0x0':
         break
