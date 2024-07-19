@@ -1,5 +1,8 @@
 import Crypto.Hash.keccak
-import eth
+import eth.config
+import eth.ecdsa
+import eth.rlp
+import eth.secp256k1
 import itertools
 import json
 import typing
@@ -68,7 +71,7 @@ class PubKey:
             self.y == other.y,
         ])
 
-    def addr(self) -> str:
+    def addr(self) -> bytearray:
         b = bytearray()
         b.extend(self.x.to_bytes(32))
         b.extend(self.y.to_bytes(32))
@@ -79,6 +82,13 @@ class PubKey:
             'x': f'0x{self.x:064x}',
             'y': f'0x{self.y:064x}'
         }
+
+    def pt(self) -> eth.secp256k1.Pt:
+        return eth.secp256k1.Pt(eth.secp256k1.Fq(self.x), eth.secp256k1.Fq(self.y))
+
+    @staticmethod
+    def pt_decode(data: eth.secp256k1.Pt):
+        return PubKey(data.x.x, data.y.x)
 
 
 class TxLegacy:
