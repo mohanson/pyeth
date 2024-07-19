@@ -1,4 +1,4 @@
-import eth
+import eth.config
 import itertools
 import random
 import requests

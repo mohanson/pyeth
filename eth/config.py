@@ -21,7 +21,7 @@ develop = ObjectDict({
 })
 
 mainnet = ObjectDict({
-    'url': 'https://eth.llamarpc.com',
+    'url': 'https://eth.drpc.org',
     'chain_id': 1,
     'tx_gas': 21000,
 })

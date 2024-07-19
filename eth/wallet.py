@@ -1,4 +1,7 @@
-import eth
+import eth.config
+import eth.core
+import eth.denomination
+import eth.rpc
 import json
 import typing
 
