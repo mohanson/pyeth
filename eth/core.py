@@ -333,3 +333,32 @@ class TxDynamicFee:
         self.r = int.from_bytes(sign[0x00:0x20])
         self.s = int.from_bytes(sign[0x20:0x40])
         self.v = sign[0x40]
+
+
+class Text:
+    def __init__(self, data: str) -> None:
+        self.data = data
+
+    def hash(self) -> bytearray:
+        # TextHash is a helper function that calculates a hash for the given message that can be safely used to
+        # calculate a signature from. The hash is calculated as
+        # keccak256("\x19Ethereum Signed Message:\n"${message length}${message}).
+        # Note that message length is a string representation of the length.
+        # See https://pkg.go.dev/github.com/ethereum/go-ethereum@v1.14.7/accounts#TextHash
+        data = '\x19Ethereum Signed Message:\n'
+        data += str(len(self.data))
+        data += self.data
+        return eth.core.hash(data.encode())
+
+    def pubkey(self, sig: bytearray) -> PubKey:
+        m = eth.secp256k1.Fr(int.from_bytes(self.hash()))
+        r = eth.secp256k1.Fr(int.from_bytes(sig[0x00:0x20]))
+        s = eth.secp256k1.Fr(int.from_bytes(sig[0x20:0x40]))
+        v = (sig[0x40] - 27) % 4
+        return PubKey.pt_decode(eth.ecdsa.pubkey(m, r, s, v))
+
+    def sign(self, prikey: PriKey) -> bytearray:
+        # Presents a plain text signature challenge to the user and returns the signed response.
+        sig = prikey.sign(self.hash())
+        sig[0x40] += 27
+        return sig
