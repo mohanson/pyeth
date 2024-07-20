@@ -13,3 +13,15 @@ def test_pubkey_addr():
     pubkey = prikey.pubkey()
     addr = pubkey.addr()
     assert addr.hex() == '7e5f4552091a69125d5dfcb7b8c2659029395bdf'
+
+
+def test_text_hash():
+    text = eth.core.Text('Hello Joe')
+    assert text.hash().hex() == 'a080337ae51c4e064c189e113edd0ba391df9206e2f49db658bb32cf2911730b'
+
+
+def test_sign():
+    prikey = eth.core.PriKey(1)
+    pubkey = prikey.pubkey()
+    text = eth.core.Text('Hello Joe')
+    assert text.pubkey(text.sign(prikey)) == pubkey
