@@ -23,7 +23,7 @@ def test_eth_send_raw_transaction_tx_access_list():
     tx = eth.core.TxAccessList(
         int(eth.rpc.eth_get_transaction_count(f'0x{user_addr.hex()}', 'pending'), 0),
         int(eth.rpc.eth_gas_price(), 0),
-        eth.config.current.tx_gas,
+        eth.config.current.gas_base_fee,
         hole_addr,
         1 * eth.denomination.ether,
         bytearray(),
@@ -48,7 +48,7 @@ def test_eth_send_raw_transaction_tx_dynamic_fee():
         int(eth.rpc.eth_get_transaction_count(f'0x{user_addr.hex()}', 'pending'), 0),
         gas_tip_cap,
         gas_fee_cap,
-        eth.config.current.tx_gas,
+        eth.config.current.gas_base_fee,
         hole_addr,
         1 * eth.denomination.ether,
         bytearray(),
@@ -69,7 +69,7 @@ def test_eth_send_raw_transaction_tx_legacy():
     tx = eth.core.TxLegacy(
         int(eth.rpc.eth_get_transaction_count(f'0x{user_addr.hex()}', 'pending'), 0),
         int(eth.rpc.eth_gas_price(), 0),
-        eth.config.current.tx_gas,
+        eth.config.current.gas_base_fee,
         hole_addr,
         1 * eth.denomination.ether,
         bytearray(),

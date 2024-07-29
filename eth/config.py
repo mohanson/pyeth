@@ -15,32 +15,32 @@ class ObjectDict(dict):
 
 
 develop = ObjectDict({
-    'url': 'http://127.0.0.1:8545',
     'chain_id': 1337,
-    'tx_gas': 21000,
+    'gas_base_fee': 21000,
+    'url': 'http://127.0.0.1:8545',
 })
 
 mainnet = ObjectDict({
-    'url': 'https://eth.drpc.org',
     'chain_id': 1,
-    'tx_gas': 21000,
+    'gas_base_fee': 21000,
+    'url': 'https://eth.drpc.org',
 })
 
 testnet = ObjectDict({
-    'url': 'https://rpc.sepolia.org',
     'chain_id': 11155111,
-    'tx_gas': 21000,
+    'gas_base_fee': 21000,
+    'url': 'https://rpc.sepolia.org',
 })
 
 
 def upgrade(url: str):
-    develop.url = url
     develop.chain_id = int(requests.post(url, json={
         'id': random.randint(0x00000000, 0xffffffff),
         'jsonrpc': '2.0',
         'method': 'eth_chainId',
         'params': []
     }).json()['result'], 0)
+    develop.url = url
 
 
 current = develop
