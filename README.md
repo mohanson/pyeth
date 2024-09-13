@@ -7,7 +7,7 @@ Python ETH is an experimental project that aims to provide human-friendly interf
 ```sh
 $ git clone https://github.com/mohanson/pyeth
 $ cd pyeth
-$ python -m pip install --editable . --config-settings editable_mode=strict
+$ python -m pip install --editable .
 ```
 
 ## Usage
