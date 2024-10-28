@@ -6,7 +6,6 @@ import eth.secp256k1
 import itertools
 import json
 import typing
-Self = typing.Self
 
 
 def hash(data: bytearray) -> bytearray:
@@ -88,7 +87,7 @@ class PubKey:
         return eth.secp256k1.Pt(eth.secp256k1.Fq(self.x), eth.secp256k1.Fq(self.y))
 
     @classmethod
-    def pt_decode(cls, data: eth.secp256k1.Pt) -> Self:
+    def pt_decode(cls, data: eth.secp256k1.Pt) -> typing.Self:
         return PubKey(data.x.x, data.y.x)
 
 
