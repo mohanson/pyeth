@@ -1,5 +1,5 @@
 import argparse
-import eth
+import pleth
 
 # Transfer ether to other.
 
@@ -11,15 +11,15 @@ parser.add_argument('--value', type=float, help='ether value')
 args = parser.parse_args()
 
 if args.net == 'develop':
-    eth.config.upgrade('http://127.0.0.1:8545')
-    eth.config.current = eth.config.develop
+    pleth.config.upgrade('http://127.0.0.1:8545')
+    pleth.config.current = pleth.config.develop
 if args.net == 'mainnet':
-    eth.config.current = eth.config.mainnet
+    pleth.config.current = pleth.config.mainnet
 if args.net == 'testnet':
-    eth.config.current = eth.config.testnet
+    pleth.config.current = pleth.config.testnet
 
-user = eth.wallet.Wallet(int(args.prikey, 0))
+user = pleth.wallet.Wallet(int(args.prikey, 0))
 hole = bytearray.fromhex(args.to[2:])
 
-hash = user.transfer(hole, int(args.value * eth.denomination.ether))
+hash = user.transfer(hole, int(args.value * pleth.denomination.ether))
 print(f'0x{hash.hex()}')

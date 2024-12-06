@@ -1,11 +1,11 @@
-import eth
+import pleth
 
 # Print all usdt transfer events in the last block.
 
-eth.config.current = eth.config.mainnet
+pleth.config.current = pleth.config.mainnet
 
-n = eth.rpc.eth_block_number()
-r = eth.rpc.eth_get_logs({
+n = pleth.rpc.eth_block_number()
+r = pleth.rpc.eth_get_logs({
     'fromBlock': n,
     'toBlock': n,
     'address': '0xdAC17F958D2ee523a2206206994597C13D831ec7',

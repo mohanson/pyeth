@@ -1,10 +1,10 @@
 import Crypto.Hash.keccak
-import eth.config
-import eth.ecdsa
-import eth.rlp
-import eth.secp256k1
 import itertools
 import json
+import pleth.config
+import pleth.ecdsa
+import pleth.rlp
+import pleth.secp256k1
 import typing
 
 
@@ -30,14 +30,14 @@ class PriKey:
         }
 
     def pubkey(self):
-        pubkey = eth.secp256k1.G * eth.secp256k1.Fr(self.n)
+        pubkey = pleth.secp256k1.G * pleth.secp256k1.Fr(self.n)
         return PubKey(pubkey.x.x, pubkey.y.x)
 
     def sign(self, data: bytearray) -> bytearray:
         assert len(data) == 32
-        m = eth.secp256k1.Fr(int.from_bytes(data))
+        m = pleth.secp256k1.Fr(int.from_bytes(data))
         for _ in itertools.repeat(0):
-            r, s, v = eth.ecdsa.sign(eth.secp256k1.Fr(self.n), m)
+            r, s, v = pleth.ecdsa.sign(pleth.secp256k1.Fr(self.n), m)
             # https://ethereum.github.io/yellowpaper/paper.pdf, Appendix F. Signing Transactions.
             # We declare that an ECDSA signature is invalid unless all the following conditions are true:
             # 1) 0 < r < secp256k1n
@@ -48,7 +48,7 @@ class PriKey:
                 continue
             # Here we adjust the sign of s.
             # Doc: https://ethereum.stackexchange.com/questions/55245/why-is-s-in-transaction-signature-limited-to-n-21
-            if s.x * 2 >= eth.secp256k1.N:
+            if s.x * 2 >= pleth.secp256k1.N:
                 s = -s
                 v = 1 - v
             return bytearray(r.x.to_bytes(32)) + bytearray(s.x.to_bytes(32)) + bytearray([v])
@@ -58,7 +58,7 @@ class PriKey:
 class PubKey:
     def __init__(self, x: int, y: int) -> None:
         # The public key must be on the curve.
-        _ = eth.secp256k1.Pt(eth.secp256k1.Fq(x), eth.secp256k1.Fq(y))
+        _ = pleth.secp256k1.Pt(pleth.secp256k1.Fq(x), pleth.secp256k1.Fq(y))
         self.x = x
         self.y = y
 
@@ -83,11 +83,11 @@ class PubKey:
             'y': f'0x{self.y:064x}'
         }
 
-    def pt(self) -> eth.secp256k1.Pt:
-        return eth.secp256k1.Pt(eth.secp256k1.Fq(self.x), eth.secp256k1.Fq(self.y))
+    def pt(self) -> pleth.secp256k1.Pt:
+        return pleth.secp256k1.Pt(pleth.secp256k1.Fq(self.x), pleth.secp256k1.Fq(self.y))
 
     @classmethod
-    def pt_decode(cls, data: eth.secp256k1.Pt) -> typing.Self:
+    def pt_decode(cls, data: pleth.secp256k1.Pt) -> typing.Self:
         return PubKey(data.x.x, data.y.x)
 
 
@@ -121,16 +121,16 @@ class TxLegacy:
         return self.hash() == other.hash()
 
     def envelope(self) -> bytearray:
-        return eth.rlp.encode([
-            eth.rlp.put_uint(self.nonce),
-            eth.rlp.put_uint(self.gas_price),
-            eth.rlp.put_uint(self.gas),
+        return pleth.rlp.encode([
+            pleth.rlp.put_uint(self.nonce),
+            pleth.rlp.put_uint(self.gas_price),
+            pleth.rlp.put_uint(self.gas),
             self.to if self.to else bytearray(),
-            eth.rlp.put_uint(self.value),
+            pleth.rlp.put_uint(self.value),
             self.data,
-            eth.rlp.put_uint(self.v),
-            eth.rlp.put_uint(self.r),
-            eth.rlp.put_uint(self.s),
+            pleth.rlp.put_uint(self.v),
+            pleth.rlp.put_uint(self.r),
+            pleth.rlp.put_uint(self.s),
         ])
 
     def hash(self) -> bytearray:
@@ -151,20 +151,20 @@ class TxLegacy:
 
     def sign(self, prikey: PriKey) -> None:
         # EIP-155: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
-        sign = prikey.sign(hash(eth.rlp.encode([
-            eth.rlp.put_uint(self.nonce),
-            eth.rlp.put_uint(self.gas_price),
-            eth.rlp.put_uint(self.gas),
+        sign = prikey.sign(hash(pleth.rlp.encode([
+            pleth.rlp.put_uint(self.nonce),
+            pleth.rlp.put_uint(self.gas_price),
+            pleth.rlp.put_uint(self.gas),
             self.to if self.to else bytearray(),
-            eth.rlp.put_uint(self.value),
+            pleth.rlp.put_uint(self.value),
             self.data,
-            eth.rlp.put_uint(eth.config.current.chain_id),
-            eth.rlp.put_uint(0),
-            eth.rlp.put_uint(0),
+            pleth.rlp.put_uint(pleth.config.current.chain_id),
+            pleth.rlp.put_uint(0),
+            pleth.rlp.put_uint(0),
         ])))
         self.r = int.from_bytes(sign[0x00:0x20])
         self.s = int.from_bytes(sign[0x20:0x40])
-        self.v = sign[0x40] + 35 + eth.config.current.chain_id * 2
+        self.v = sign[0x40] + 35 + pleth.config.current.chain_id * 2
 
 
 class TxAccessList:
@@ -180,7 +180,7 @@ class TxAccessList:
         data: bytearray,
     ) -> None:
         assert isinstance(data, bytearray)
-        self.chain_id = eth.config.current.chain_id
+        self.chain_id = pleth.config.current.chain_id
         self.nonce = nonce
         self.gas_price = gas_price
         self.gas = gas
@@ -199,18 +199,18 @@ class TxAccessList:
         return self.hash() == other.hash()
 
     def envelope(self) -> bytearray:
-        return bytearray([0x01]) + eth.rlp.encode([
-            eth.rlp.put_uint(self.chain_id),
-            eth.rlp.put_uint(self.nonce),
-            eth.rlp.put_uint(self.gas_price),
-            eth.rlp.put_uint(self.gas),
+        return bytearray([0x01]) + pleth.rlp.encode([
+            pleth.rlp.put_uint(self.chain_id),
+            pleth.rlp.put_uint(self.nonce),
+            pleth.rlp.put_uint(self.gas_price),
+            pleth.rlp.put_uint(self.gas),
             self.to if self.to else bytearray(),
-            eth.rlp.put_uint(self.value),
+            pleth.rlp.put_uint(self.value),
             self.data,
             self.access_list,
-            eth.rlp.put_uint(self.v),
-            eth.rlp.put_uint(self.r),
-            eth.rlp.put_uint(self.s),
+            pleth.rlp.put_uint(self.v),
+            pleth.rlp.put_uint(self.r),
+            pleth.rlp.put_uint(self.s),
         ])
 
     def hash(self) -> bytearray:
@@ -232,13 +232,13 @@ class TxAccessList:
         }
 
     def sign(self, prikey: PriKey) -> None:
-        sign = prikey.sign(hash(bytearray([0x01]) + eth.rlp.encode([
-            eth.rlp.put_uint(self.chain_id),
-            eth.rlp.put_uint(self.nonce),
-            eth.rlp.put_uint(self.gas_price),
-            eth.rlp.put_uint(self.gas),
+        sign = prikey.sign(hash(bytearray([0x01]) + pleth.rlp.encode([
+            pleth.rlp.put_uint(self.chain_id),
+            pleth.rlp.put_uint(self.nonce),
+            pleth.rlp.put_uint(self.gas_price),
+            pleth.rlp.put_uint(self.gas),
             self.to if self.to else bytearray(),
-            eth.rlp.put_uint(self.value),
+            pleth.rlp.put_uint(self.value),
             self.data,
             self.access_list,
         ])))
@@ -264,7 +264,7 @@ class TxDynamicFee:
         data: bytearray,
     ) -> None:
         assert isinstance(data, bytearray)
-        self.chain_id = eth.config.current.chain_id
+        self.chain_id = pleth.config.current.chain_id
         self.nonce = nonce
         self.gas_tip_cap = gas_tip_cap
         self.gas_fee_cap = gas_fee_cap
@@ -284,19 +284,19 @@ class TxDynamicFee:
         return self.hash() == other.hash()
 
     def envelope(self) -> bytearray:
-        return bytearray([0x02]) + eth.rlp.encode([
-            eth.rlp.put_uint(self.chain_id),
-            eth.rlp.put_uint(self.nonce),
-            eth.rlp.put_uint(self.gas_tip_cap),
-            eth.rlp.put_uint(self.gas_fee_cap),
-            eth.rlp.put_uint(self.gas),
+        return bytearray([0x02]) + pleth.rlp.encode([
+            pleth.rlp.put_uint(self.chain_id),
+            pleth.rlp.put_uint(self.nonce),
+            pleth.rlp.put_uint(self.gas_tip_cap),
+            pleth.rlp.put_uint(self.gas_fee_cap),
+            pleth.rlp.put_uint(self.gas),
             self.to if self.to else bytearray(),
-            eth.rlp.put_uint(self.value),
+            pleth.rlp.put_uint(self.value),
             self.data,
             self.access_list,
-            eth.rlp.put_uint(self.v),
-            eth.rlp.put_uint(self.r),
-            eth.rlp.put_uint(self.s),
+            pleth.rlp.put_uint(self.v),
+            pleth.rlp.put_uint(self.r),
+            pleth.rlp.put_uint(self.s),
         ])
 
     def hash(self) -> bytearray:
@@ -319,14 +319,14 @@ class TxDynamicFee:
         }
 
     def sign(self, prikey: PriKey) -> None:
-        sign = prikey.sign(hash(bytearray([0x02]) + eth.rlp.encode([
-            eth.rlp.put_uint(self.chain_id),
-            eth.rlp.put_uint(self.nonce),
-            eth.rlp.put_uint(self.gas_tip_cap),
-            eth.rlp.put_uint(self.gas_fee_cap),
-            eth.rlp.put_uint(self.gas),
+        sign = prikey.sign(hash(bytearray([0x02]) + pleth.rlp.encode([
+            pleth.rlp.put_uint(self.chain_id),
+            pleth.rlp.put_uint(self.nonce),
+            pleth.rlp.put_uint(self.gas_tip_cap),
+            pleth.rlp.put_uint(self.gas_fee_cap),
+            pleth.rlp.put_uint(self.gas),
             self.to if self.to else bytearray(),
-            eth.rlp.put_uint(self.value),
+            pleth.rlp.put_uint(self.value),
             self.data,
             self.access_list,
         ])))
@@ -348,14 +348,14 @@ class Text:
         data = '\x19Ethereum Signed Message:\n'
         data += str(len(self.data))
         data += self.data
-        return eth.core.hash(data.encode())
+        return pleth.core.hash(data.encode())
 
     def pubkey(self, sig: bytearray) -> PubKey:
-        m = eth.secp256k1.Fr(int.from_bytes(self.hash()))
-        r = eth.secp256k1.Fr(int.from_bytes(sig[0x00:0x20]))
-        s = eth.secp256k1.Fr(int.from_bytes(sig[0x20:0x40]))
+        m = pleth.secp256k1.Fr(int.from_bytes(self.hash()))
+        r = pleth.secp256k1.Fr(int.from_bytes(sig[0x00:0x20]))
+        s = pleth.secp256k1.Fr(int.from_bytes(sig[0x20:0x40]))
         v = (sig[0x40] - 27) % 4
-        return PubKey.pt_decode(eth.ecdsa.pubkey(m, r, s, v))
+        return PubKey.pt_decode(pleth.ecdsa.pubkey(m, r, s, v))
 
     def sign(self, prikey: PriKey) -> bytearray:
         # Presents a plain text signature challenge to the user and returns the signed response.

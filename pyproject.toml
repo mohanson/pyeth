@@ -2,22 +2,16 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.setuptools]
-packages = ["eth"]
-
 [project]
-name = "pyeth"
-version = "1.1.1"
+name = "pleth"
+version = "1.2.0"
 authors = [
   { name="Mohanson", email="mohanson@outlook.com" },
 ]
-description = "Python SDK for ETH"
+description = "Pleth: Ethereum Library For Humans"
 readme = "README.md"
 license = { file = "LICENSE" }
 dependencies = ["pycryptodome", "requests"]
 
 [project.urls]
-homepage = "https://github.com/mohanson/pyeth"
-
-[tool.hatch.build.targets.wheel]
-packages = ["eth"]
+homepage = "https://github.com/mohanson/pleth"

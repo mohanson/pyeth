@@ -1,4 +1,4 @@
-import eth.core
+import pleth.core
 import typing
 
 # The Contract Application Binary Interface (ABI) is the standard way to interact with contracts in the Ethereum
@@ -31,7 +31,7 @@ def decode_address(data: bytearray) -> bytearray:
 
 def function_selector(name: str, args_type: typing.List[str]) -> bytearray:
     s = name + '(' + ','.join(args_type) + ')'
-    return eth.core.hash(bytearray(s.encode()))[:4]
+    return pleth.core.hash(bytearray(s.encode()))[:4]
 
 
 def argument_encoding(data: typing.List[bytearray]) -> bytearray:

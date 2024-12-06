@@ -1,16 +1,20 @@
-# Python SDK for ETH
+# Pleth: Ethereum Library For Humans
 
-Python ETH is an experimental project that aims to provide human-friendly interfaces for common ETH operations. Note that Python ETH is not a complete SDK, but only implements the ETH functions that I am interested in.
+Pleth is a project that aims to provide human-friendly interfaces for common ethereum operations. Using pleth, you can easily and happily complete everything you want to do on eth.
 
 ## Installation
 
 ```sh
+$ pip install pleth
+# or
 $ git clone https://github.com/mohanson/pyeth
 $ cd pyeth
 $ python -m pip install --editable .
 ```
 
 ## Usage
+
+By default, pleth is configured on the develop. To switch networks, use `pleth.config.current = pleth.config.mainnet`.
 
 **example/addr.py**
 

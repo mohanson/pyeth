@@ -1,5 +1,5 @@
-import eth.config
 import itertools
+import pleth.config
 import random
 import requests
 import time
@@ -9,7 +9,7 @@ import typing
 
 
 def call(method: str, params: typing.List) -> typing.Any:
-    r = requests.post(eth.config.current.url, json={
+    r = requests.post(pleth.config.current.url, json={
         'id': random.randint(0x00000000, 0xffffffff),
         'jsonrpc': '2.0',
         'method': method,
